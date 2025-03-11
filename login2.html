@@ -1,0 +1,143 @@
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href="style.css">
+     <link rel="preconnect" href="https://fonts.gstatic.com">
+     <link href="https://fonts.googleapis.com/css2?family=Varela&display=swap" rel="stylesheet">
+     <meta name="google-signin-client_id" content="402066985547-jiu9o4s9rfaqkb8njai9btsffb7a54i3.apps.googleusercontent.com">
+     <script src="https://apis.google.com/js/platform.js" async defer></script>
+     <title>Sign in with Google</title>
+     <style>
+        
+:root {
+    --green: #3BB143;
+    --red: #FF5050;
+}
+
+*,
+*::after,
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+}
+
+html{
+    font-size: 62.5%; /*1rem = 10px*/
+    font-family: 'Varela', sans-serif;
+}
+
+body{
+    box-sizing: border-box;
+}
+
+.container {
+    width: 75vw;
+    margin: 5rem auto;
+
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.header__text {
+    font-size: 4rem;
+    margin-bottom: 2rem;
+}
+
+.signin-button {
+    font-family: 'Varela', sans-serif;
+    
+}
+
+#profile {
+    margin-top: 2rem;
+    padding: 3rem 5rem;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+#profile__image {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    width: 15rem;
+    height: 15rem;
+}
+
+#profile__name {
+    font-size: 1.6rem;
+    margin-top: 2rem;
+}
+
+#profile__email {
+    font-size: 1.6rem;
+    margin-top: .5rem;;
+}
+
+#signout-button {
+    font-family: inherit;
+    color: var(--red);
+    padding: 1rem;
+    margin-top: 2rem;
+    outline: none;
+    border: 1px solid var(--red);
+    background-color: #fff;
+    cursor: pointer;
+
+    transition: all .2s;
+}
+
+#signout-button:hover {
+    color: #fff;
+    background-color: var(--red);
+}
+
+#refresh-button {
+    font-family: inherit;
+    color: var(--green);
+    padding: 1rem;
+    margin-top: 2rem;
+    outline: none;
+    border: 1px solid var(--green) ;
+    background-color: #fff;
+    cursor: pointer;
+
+    transition: all .2s;
+}
+
+#refresh-button:hover {
+    color: #fff;
+    background-color: var(--green);
+}
+     </style>
+  
+ </head>
+ <body>
+     <div class="container">
+         <header class="header">
+             <h1 class="header__text">Sign in with Google Project</h1>
+         </header>
+ 
+         <div id="g-signin2" class="g-signin2" data-onsuccess="onSignIn"></div>
+     
+         <div id="profile">
+             <img id="profile__image" src="./placeholder.jpg" alt="user image">
+             <h3 id="profile__name">Name</h3>
+             <p id="profile__email">E-mail</p>
+             <button id="signout-button" onclick="signOut()">sign out</button>
+         </div>
+ 
+         <button id="refresh-button" onclick="refresh()">refresh</button>
+     </div>
+    
+     <script src="main.js"></script>
+     <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+ </body>
+ </html>

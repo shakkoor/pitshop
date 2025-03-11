@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="module">
+        // ✅ Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+
+        // ✅ Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqYxGuFOSGZZ-88tSo9LLLttqTbdn-MXE",
+            authDomain: "ecommercesite-c2e95.firebaseapp.com",
+            projectId: "ecommercesite-c2e95",
+            storageBucket: "ecommercesite-c2e95.firebasestorage.app",
+            messagingSenderId: "781959940060",
+            appId: "1:781959940060:web:31e77573672448a713f119",
+            measurementId: "G-9TQGJBJ8BZ"
+        };
+
+        // ✅ Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let cart = JSON.parse(localStorage.getItem("checkoutCart")) || [];
+            let orderSummary = document.getElementById("order-summary");
+            let totalPriceElement = document.getElementById("total-price");
+
+            let totalAmount = 0;
+            let gstRate = 0.18;
+
+            if (cart.length === 0) {
+                orderSummary.innerHTML = "<p>Your cart is empty.</p>";
+                return;
+            }
+
+            orderSummary.innerHTML = "";
+            cart.forEach((item) => {
+                let price = Number(item.Price);
+                let itemTotal = price * item.qty;
+                let gstAmount = itemTotal * gstRate;
+                totalAmount += itemTotal + gstAmount;
+
+                orderSummary.innerHTML += `
+                    <div class="checkout-item">
+                        <h3>${item.Title}</h3>
+                        <p>Quantity: ${item.qty}</p>
+                        <p>Price: ₹${price.toFixed(2)}</p>
+                        <p>GST (18%): ₹${gstAmount.toFixed(2)}</p>
+                        <p>Total: ₹${(itemTotal + gstAmount).toFixed(2)}</p>
+                    </div>
+                    <hr>
+                `;
+            });
+
+            totalPriceElement.innerText = totalAmount.toFixed(2);
+        });
+
+        // ✅ Handle Checkout Form Submission
+        document.getElementById("checkout-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            // 🔹 Get user details
+            const user = auth.currentUser;
+            if (!user) {
+                alert("❌ Your order has been placed");
+                return;
+            }
+
+            let orderDetails = {
+                userId: user.uid,
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                address: document.getElementById("address").value,
+                phone: document.getElementById("phone").value,
+                cart: JSON.parse(localStorage.getItem("checkoutCart")) || [],
+                total: document.getElementById("total-price").innerText,
+                timestamp: new Date()
+            };
+            generatePDF(orderDetails);
+
+            try {
+                // ✅ Store order in Firestore
+                const docRef = await addDoc(collection(db, "orders"), orderDetails);
+                console.log("Order ID:", docRef.id);
+
+                // ✅ Generate PDF and send email
+                generatePDF(orderDetails, function (pdfBlob) {
+                    sendEmail(orderDetails, pdfBlob);
+                });
+
+                alert("✅ Order successfully placed! The bill has been sent to your email.");
+                localStorage.removeItem("checkoutCart");
+                window.location.href = "index.html";
+            } catch (error) {
+                console.error("Error saving order:", error);
+                
+            }
+        });
+
+        function generatePDF(order) {
+    const { jsPDF } = window.jspdf;
+    let doc = new jsPDF();
+
+    // ✅ Title
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Earthy Hands - Order Receipt", 60, 20);
+
+    // ✅ Customer Details
+    doc.setFontSize(12);
+    doc.text(`Customer: ${order.name}`, 20, 40);
+    doc.text(`Email: ${order.email}`, 20, 50);
+    doc.text(`Address: ${order.address}`, 20, 60);
+    doc.text(`Phone: ${order.phone}`, 20, 70);
+
+    // ✅ Order Table
+    doc.autoTable({
+        startY: 80,
+        head: [["#", "Product", "Qty", "Price", "GST (18%)", "Total"]],
+        body: order.cart.map((item, index) => [
+            index + 1, item.Title, item.qty, `₹${item.Price}`, `₹${(item.Price * 0.18).toFixed(2)}`, `₹${(item.Price * item.qty * 1.18).toFixed(2)}`
+        ])
+    });
+
+    // ✅ Total Amount
+    let finalY = doc.autoTable.previous.finalY + 10;
+    doc.setFontSize(14);
+    doc.text(`Total Amount: ₹${order.total}`, 20, finalY);
+
+    // ✅ Save & Download PDF
+    doc.save(`Receipt_${order.name}.pdf`);
+}
+
+
+        // ✅ Send Email with PDF
+        function sendEmail(order, pdfBlob) {
+            emailjs.init("anw9zs9");
+
+            let reader = new FileReader();
+            reader.readAsDataURL(pdfBlob);
+            reader.onloadend = function () {
+                let base64data = reader.result.split(",")[1];
+
+                emailjs.send("service_anw9zs9", "template_esf5edr", {
+                    to_email: order.email,
+                    to_name: order.name,
+                    message: `Dear ${order.name},\n\nThank you for your purchase! Attached is your receipt.\n\nTotal: ₹${order.total}`,
+                    pdf_attachment: base64data
+                }).then(() => {
+                    alert("📧 Email with receipt sent successfully!");
+                }).catch((error) => {
+                    alert("❌ Failed to send email. Please try again.");
+                    console.error("EmailJS Error:", error);
+                });
+            };
+        }
+    </script>
+    <link rel="stylesheet" href="css/checkout.css">
+</head>
+<body>
+
+    <div class="checkout-container">
+        <h2>Checkout</h2>
+
+        <div id="order-summary"></div>
+        <h3>Total: ₹<span id="total-price">0.00</span></h3>
+
+        <form id="checkout-form">
+            <input type="text" id="name" placeholder="Full Name" required>
+            <input type="email" id="email" placeholder="Email (for receipt)" required>
+            <input type="text" id="address" placeholder="Shipping Address" required>
+            <input type="tel" id="phone" placeholder="Phone Number" required>
+            <button type="submit">Place Order</button>
+        </form>
+    </div>
+
+</body>
+</html>
+

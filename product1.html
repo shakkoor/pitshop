@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bike PitShop - Products</title>
+
+    <link rel="stylesheet" href="./css/Product1.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- External Scripts -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <
+
+    <!-- ✅ Header -->
+    <div class="main_header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html"><img src="./img/logo.png" alt="logo" class="asd"></a>
+            </div>
+            <div class="search_box">
+                <input type="text" id="search" placeholder="Search for Bike Accessories..." autocomplete="off">
+                <button onclick="searchProduct()">Search</button>
+            </div>
+            <div class="icon">
+                <a href="#" class="link"><i class="bi bi-heart-fill"></i></a>
+                <a href="cart.html" class="link1" style="position: relative;">
+                    <i class="bi bi-bag-fill"></i>
+                    <span id="cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Product Page -->
+    <div class="products">
+        <h2>Bike Accessories & Gear</h2>
+        <p>Home > Products</p>
+        <div class="container">
+            <div class="filter">
+                <div class="categories">
+                    <h3>Categories</h3>
+                    <ul>
+                        <li onclick="allProducts()">All Products</li>
+                        <li onclick="filterProduct('Helmet')">Helmets</li>
+                        <li onclick="filterProduct('Gloves')">Gloves</li>
+                        <li onclick="filterProduct('Jackets')">Jackets</li>
+                        <li onclick="filterProduct('Boots')">Boots</li>
+                        <li onclick="filterProduct('Accessories')">Accessories</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="productbox">
+                <div id="product-list" class="contant"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Cart Section -->
+    <div class="cart" style="display: none;">
+        <h2>Shopping Cart</h2>
+        <div id="cart-items"></div>
+        <h3>Total: ₹<span id="total-price">0</span></h3>
+        <a href="checkout.html"><button>Proceed to Checkout</button></a>
+    </div>
+
+    <!-- ✅ Firebase & Product Script -->
+    <script type="module">
+        // ✅ Import Firebase Modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        // ✅ Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqYxGuFOSGZZ-88tSo9LLLttqTbdn-MXE",
+            authDomain: "ecommercesite-c2e95.firebaseapp.com",
+            projectId: "ecommercesite-c2e95",
+            storageBucket: "ecommercesite-c2e95.appspot.com",
+            messagingSenderId: "781959940060",
+            appId: "1:781959940060:web:31e77573672448a713f119",
+            measurementId: "G-9TQGJBJ8BZ"
+        };
+
+        // ✅ Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let products = [];
+        let selectedCategory = "All";
+
+        // ✅ Fetch Products from Firebase
+        async function fetchProducts() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "Product"));
+                products = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    Title: doc.data().Product_name,
+                    Category: doc.data().Category,
+                    Price: Number(doc.data().Price),
+                    Stock: doc.data().Stock,
+                    Image: doc.data().Image_URL
+                }));
+
+                displayProducts();
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        }
+
+ // ✅ Display Products with Edit & Delete Buttons
+function displayProducts() {
+    let productContainer = document.getElementById('product-list');
+    productContainer.innerHTML = '';
+
+    let filteredProducts = selectedCategory === "All" ? products : products.filter(p => p.Category === selectedCategory);
+
+    filteredProducts.forEach((product, index) => {
+        productContainer.innerHTML += `
+            <div class="box">
+                <div class="img_box">
+                    <img src="${product.Image}" alt="${product.Title}">
+                </div>
+
+                <div class="detail">
+                    <p>${product.Category}</p>
+                    <h3>${product.Title}</h3>
+                    <h4>₹${product.Price}</h4>
+                </div>
+
+                <!-- Edit & Delete Buttons -->
+                <div class="button-group">
+                    <button class="edit-btn" onclick="editProduct(${index})">Edit</button>
+                    <button class="delete-btn" onclick="deleteProduct(${index})">Delete</button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+// ✅ Edit Function (Replace this with your actual logic)
+function editProduct(index) {
+    alert(`Edit Product: ${products[index].Title}`);
+}
+
+// ✅ Delete Function
+function deleteProduct(index) {
+    if (confirm(`Are you sure you want to delete ${products[index].Title}?`)) {
+        products.splice(index, 1); // Remove product from array
+        displayProducts(); // Re-render product list
+    }
+}
+
+
+        // ✅ Filter Products by Category
+        function filterProduct(category) {
+            selectedCategory = category;
+            displayProducts();
+        }
+
+        // ✅ Add to Cart
+        function addToCart(productId) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            let product = products.find(p => p.id === productId);
+
+            if (!product) {
+                console.error("Product not found!");
+                return;
+            }
+
+            let existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    Title: product.Title,
+                    Category: product.Category,
+                    Price: product.Price,
+                    Image: product.Image,
+                    qty: 1
+                });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+        }
+
+        // ✅ Update Cart Count
+        function updateCartCount() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            let totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById("cart-count").innerText = totalItems;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchProducts();
+            updateCartCount();
+        });
+    </script>
+
+    <!-- ✅ Footer -->
+    <div class="footer">
+        <div class="container">
+            <p>© 2025 Bike PitShop | Your Trusted Source for Bike Accessories</p>
+        </div>
+    </div>
+</body>
+</html>

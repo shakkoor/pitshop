@@ -1,0 +1,293 @@
+/* ✅ Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+/* ✅ Free Shipping Notice */
+.free {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #ff5722;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* ✅ Header Section */
+.main_header {
+    background-color: #222;
+    padding: 15px 0;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo img {
+    height: 60px;
+}
+
+.search_box {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.search_box input {
+    border: none;
+    padding: 10px;
+    outline: none;
+    width: 300px;
+    font-size: 14px;
+}
+
+.search_box button {
+    background: #ff5722;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+/* ✅ Icons */
+.icon {
+    display: flex;
+    align-items: center;
+}
+
+.icon a {
+    color: white;
+    margin-left: 15px;
+    font-size: 18px;
+    text-decoration: none;
+    position: relative;
+}
+
+.icon #cart-count {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    background: red;
+    color: white;
+    font-size: 12px;
+    padding: 3px 7px;
+    border-radius: 50%;
+}
+
+/* ✅ Product Page */
+.products {
+    text-align: center;
+    padding: 30px 0;
+    background: white;
+}
+
+.products h2 {
+    font-size: 28px;
+    color: #333;
+}
+
+.products p {
+    color: #777;
+    margin-bottom: 20px;
+}
+
+/* ✅ Product Container */
+.container {
+    display: flex;
+    align-items: flex-start;
+}
+
+/* ✅ Sidebar Filters */
+.filter {
+    width: 20%;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+.categories h3 {
+    font-size: 18px;
+    color: #ff5722;
+}
+
+.categories ul {
+    list-style: none;
+    padding: 0;
+}
+
+.categories ul li {
+    padding: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    transition: all 0.3s;
+}
+
+.categories ul li:hover {
+    color: #ff5722;
+}
+
+/* ✅ Product Display Grid */
+.productbox {
+    width: 75%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.box {
+    background: white;
+    width: 250px;
+    padding: 15px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    transition: transform 0.3s;
+}
+
+.box:hover {
+    transform: translateY(-5px);
+}
+
+.img_box img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+/* ✅ Product Details */
+.detail {
+    text-align: left;
+    margin-top: 10px;
+}
+
+.detail p {
+    font-size: 14px;
+    color: #777;
+}
+
+.detail h3 {
+    font-size: 18px;
+    margin: 5px 0;
+}
+
+.detail h4 {
+    color: #ff5722;
+    font-size: 20px;
+}
+
+/* ✅ Buttons */
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.button-group button {
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+    transition: all 0.3s;
+}
+
+.edit-btn {
+    background: #008CBA;
+    color: white;
+}
+
+.edit-btn:hover {
+    background: #0073a7;
+}
+
+.delete-btn {
+    background: #e74c3c;
+    color: white;
+}
+
+.delete-btn:hover {
+    background: #c0392b;
+}
+
+/* ✅ Cart Section */
+.cart {
+    width: 90%;
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.cart h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+#cart-items {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.cart button {
+    background: #ff5722;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.cart button:hover {
+    background: #e64a19;
+}
+
+/* ✅ Footer */
+.footer {
+    background: #222;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    margin-top: 30px;
+}
+
+/* ✅ Responsive Design */
+@media screen and (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .filter {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .productbox {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .search_box input {
+        width: 200px;
+    }
+}

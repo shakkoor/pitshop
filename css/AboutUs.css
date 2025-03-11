@@ -1,0 +1,27 @@
+/* src/AboutUs.css */
+
+.about-us-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+  }
+  
+  .a1 {
+    font-size: 36px;
+    color: #333;
+    text-align: center;
+  }
+  
+  .p1 {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #666;
+  }
+  
+  .vision-section {
+    margin-top: 40px;
+  }
+  
+  
+  /* Add more CSS styles to customize the page */
+  

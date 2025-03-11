@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+        // ✅ Import Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+        // ✅ Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqYxGuFOSGZZ-88tSo9LLLttqTbdn-MXE",
+            authDomain: "ecommercesite-c2e95.firebaseapp.com",
+            projectId: "ecommercesite-c2e95",
+            storageBucket: "ecommercesite-c2e95.firebasestorage.app",
+            messagingSenderId: "781959940060",
+            appId: "1:781959940060:web:31e77573672448a713f119",
+            measurementId: "G-9TQGJBJ8BZ"
+        };
+
+        // ✅ Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ✅ Fetch Products
+        async function fetchProducts() {
+            let products = [];
+            const querySnapshot = await getDocs(collection(db, "Product")); // ✅ Corrected Collection Name
+            querySnapshot.forEach((doc) => {
+                let data = doc.data();
+                console.log("Fetched Product:", data);
+
+                products.push({
+                    name: data.Product_name, // ✅ Corrected Field Name
+                    stock: parseInt(data.Stock) || 0, // ✅ Convert String to Number
+                    price: parseFloat(data.Price) || 0 // ✅ Convert String to Number
+                });
+            });
+
+            return products;
+        }
+
+        // ✅ Generate Chart
+        async function generateChart() {
+            const products = await fetchProducts();
+
+            // Extract Data
+            const productNames = products.map(p => p.name);
+            const productStock = products.map(p => p.stock);
+            const productPrices = products.map(p => p.price);
+
+            // ✅ Get Canvas
+            const ctx = document.getElementById('productChart').getContext('2d');
+
+            // ✅ Chart.js - Bar Chart
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: productNames,
+                    datasets: [
+                        {
+                            label: 'Stock Quantity',
+                            data: productStock,
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Price (₹)',
+                            data: productPrices,
+                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // ✅ Run Function on Load
+        window.onload = generateChart;
+    </script>
+</head>
+<body>
+    <h2>Product Stock & Price Analysis</h2>
+    <canvas id="productChart"></canvas>
+</body>
+</html>
